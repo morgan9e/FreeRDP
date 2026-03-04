@@ -67,6 +67,7 @@ class SdlWindow
 	void minimize();
 
 	[[nodiscard]] bool resize(const SDL_Point& size);
+	void resizeToScale();
 
 	[[nodiscard]] bool drawRect(SDL_Surface* surface, SDL_Point offset, const SDL_Rect& srcRect);
 	[[nodiscard]] bool drawRects(SDL_Surface* surface, SDL_Point offset,
@@ -107,4 +108,6 @@ class SdlWindow
 	Sint32 _offset_x = 0;
 	Sint32 _offset_y = 0;
 	rdpMonitor _monitor{};
+	Sint32 _intended_w = 0;
+	Sint32 _intended_h = 0;
 };

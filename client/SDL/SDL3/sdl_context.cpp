@@ -1084,6 +1084,7 @@ bool SdlContext::handleEvent(const SDL_WindowEvent& ev)
 		case SDL_EVENT_WINDOW_MOUSE_ENTER:
 			return restoreCursor();
 		case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED:
+			window->resizeToScale();
 			if (isConnected())
 			{
 				if (!window->fill())

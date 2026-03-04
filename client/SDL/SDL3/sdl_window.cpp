@@ -49,20 +49,20 @@ SdlWindow::SdlWindow(SDL_DisplayID id, const std::string& title, const SDL_Rect&
 	_window = SDL_CreateWindowWithProperties(props);
 	SDL_DestroyProperties(props);
 
-	auto sc = scale();
-	const int iscale = static_cast<int>(sc * 100.0f);
-	auto w = 100 * rect.w / iscale;
-	auto h = 100 * rect.h / iscale;
-	std::ignore = resize({ w, h });
 	SDL_SetHint(SDL_HINT_APP_NAME, "");
 	std::ignore = SDL_SyncWindow(_window);
 
 	_monitor = query(_window, id, true);
+
+	_intended_w = rect.w;
+	_intended_h = rect.h;
+	resizeToScale();
 }
 
 SdlWindow::SdlWindow(SdlWindow&& other) noexcept
     : _window(other._window), _displayID(other._displayID), _offset_x(other._offset_x),
-      _offset_y(other._offset_y), _monitor(other._monitor)
+      _offset_y(other._offset_y), _monitor(other._monitor), _intended_w(other._intended_w),
+      _intended_h(other._intended_h)
 {
 	other._window = nullptr;
 }
@@ -216,6 +216,22 @@ void SdlWindow::minimize()
 bool SdlWindow::resize(const SDL_Point& size)
 {
 	return SDL_SetWindowSize(_window, size.x, size.y);
+}
+
+void SdlWindow::resizeToScale()
+{
+	if (!_window)
+		return;
+	if (_intended_w <= 0 || _intended_h <= 0)
+		return;
+	if (SDL_GetWindowFlags(_window) & SDL_WINDOW_FULLSCREEN)
+		return;
+
+	auto sc = scale();
+	const int iscale = static_cast<int>(sc * 100.0f);
+	auto w = 100 * _intended_w / iscale;
+	auto h = 100 * _intended_h / iscale;
+	std::ignore = resize({ w, h });
 }
 
 bool SdlWindow::drawRect(SDL_Surface* surface, SDL_Point offset, const SDL_Rect& srcRect)
